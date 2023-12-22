@@ -1,0 +1,112 @@
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import {
+  DiscountPayload,
+  Filters,
+  IDiscount,
+  IRoomResponse,
+  LoadingState,
+  Pagination,
+  SuccessResponseProp,
+} from "~/types";
+
+interface InitialState {
+  data: IDiscount[];
+  isLoading: LoadingState;
+  errors: {
+    addEdit: string;
+    get: string;
+  };
+  filters: Filters;
+  pagination: Pagination;
+
+  selectedRoom: IRoomResponse | null;
+}
+
+const initialState: InitialState = {
+  data: [],
+  isLoading: "ready",
+  errors: {
+    addEdit: "",
+    get: "",
+  },
+  filters: {
+    limit: 5,
+    page: 1,
+  },
+  pagination: {
+    limit: 5,
+    page: 1,
+    totalPage: 2,
+    totalRows: 10,
+  },
+
+  selectedRoom: null,
+};
+
+const discountSlice = createSlice({
+  name: "discount",
+  initialState,
+  reducers: {
+    getDataStart: (state, _: PayloadAction<Filters>) => {
+      state.isLoading = "pending";
+    },
+
+    getDataSuccess: (
+      state,
+      {
+        payload: { metadata, options },
+      }: PayloadAction<SuccessResponseProp<IDiscount[], Pagination>>
+    ) => {
+      state.data = metadata;
+      state.isLoading = "success";
+      state.pagination = options!;
+    },
+
+    getDataFailed: (state, { payload }: PayloadAction<string>) => {
+      state.isLoading = "error";
+      state.errors.get = payload;
+    },
+
+    addDataStart: (state, _: PayloadAction<DiscountPayload>) => {
+      if (state.errors.addEdit) state.errors.addEdit = "";
+      state.isLoading = "pending";
+    },
+
+    addDataSuccess: (state) => {
+      state.isLoading = "success";
+    },
+
+    addDataFailed: (state, { payload }: PayloadAction<string>) => {
+      state.isLoading = "error";
+      state.errors.addEdit = payload;
+    },
+
+    editDataStart: (state, _: PayloadAction<DiscountPayload>) => {
+      if (state.errors.addEdit) state.errors.addEdit = "";
+      state.isLoading = "pending";
+    },
+
+    deleteDataStart: (state, _: PayloadAction<IDiscount>) => {
+      state.isLoading = "pending";
+    },
+
+    deleteDataFailed: (state) => {
+      state.isLoading = "error";
+    },
+
+    setFilter: (state, { payload }: PayloadAction<Filters>) => {
+      state.filters = {
+        ...payload,
+      };
+    },
+
+    setDebounceSearch: (_state, _actions: PayloadAction<Filters>) => {},
+
+    setToggleDiscount: (state, { payload }: PayloadAction<IRoomResponse | null>) => {
+      state.selectedRoom = payload;
+    },
+  },
+});
+
+export const discountActions = discountSlice.actions;
+export default discountSlice.reducer;

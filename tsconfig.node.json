@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    },
+  },
+  "include": [
+    "vite.config.ts"
+  ]
+}
